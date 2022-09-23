@@ -1,5 +1,6 @@
-from math import exp
 import numpy as np
+
+from normalize import escale_all
 
 rng = np.random.default_rng()
 
@@ -29,9 +30,14 @@ def simple_error(X, y, w, f):
   return error
 
 def mean_squared_error(X, y, w, f):
+  # print("mean_squared_error")
+  n, *p = X.shape
   hs = h(X, w)
   os = f(hs)
-  error = 0.5 * np.sum((y - os) ** 2)
+  # print("os", os, os.shape)
+  # print("y", y, y.shape)
+  # print("y - os", y - os, (y-os).shape)
+  error = (1 / n) * np.sum((y - os) ** 2)
   return error
 
 def add_bias(X):
@@ -90,6 +96,7 @@ class Perceptron:
       return predictions
 
 # NO ESTAN FUNCIONANDO
+# normalizo X, y
 
 class LinearPerceptron(Perceptron):
   def __init__(self, learning_rate, epochs) -> None:
@@ -99,7 +106,7 @@ class LinearPerceptron(Perceptron):
     self.error_function = mean_squared_error
 
   def train(self, X, y):
-    # X = add_bias(X)
+    X = add_bias(X)
     n, p = X.shape
     i = 0
     weights = np.zeros(shape=(p, 1))
@@ -108,31 +115,33 @@ class LinearPerceptron(Perceptron):
     w_min = weights
     
     while (error_min > 0 and i < self.epochs):
-      mu = rng.integers(0, n)    # pick a random data point
-      exc = h(X, weights)        # excitement 
-      o = self.g(exc)              # activation
-      o_prime = self.g_prime(exc)  # its derivate
+      hs = h(X, weights)
+      # print("hs", hs, hs.shape)
+      os = self.g(hs)
+      # print("os", os, os.shape)
+      der = np.apply_along_axis(self.g_prime, 1, hs).reshape(n, 1)
+      # print("der", der, der.shape)
 
-      os = X @ weights
-
-      # update weights if necessary
-      delta_w = self.lr * np.sum((y - os) * X, axis=0)
+      # print("y - os", y-os, (y-os).shape)
+      # print()
+      delta_w = self.lr * (1/n) * np.sum((y - os) * X, axis=0)
+      # print("delta_w", delta_w, delta_w.shape)
       delta_w = delta_w.reshape(p, 1)
 
-
       weights = weights + delta_w
+      # print("weights", weights, weights.shape)
 
-      # should calculate error here
       error = self.error_function(X, y, weights, self.g)
+      # print("error", error, error.shape)
       if (error < error_min):
         error_min = error
         w_min = weights
-      
+
       i = i + 1
 
     self.weights = w_min
     error = self.error_function(X, y, weights, self.g)
-    return self.weights, error
+    return self.weights, error, i
 
 class NonLinearPerceptron(Perceptron):
   def __init__(self, learning_rate, epochs) -> None:

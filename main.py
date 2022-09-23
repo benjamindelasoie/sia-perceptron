@@ -1,11 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn import datasets
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 from normalize import *
-from perceptron import LinearPerceptron, NonLinearPerceptron, Perceptron, add_bias
-
+from perceptron import LinearPerceptron, NonLinearPerceptron, Perceptron
+import utils
 
 AND_X = np.array([
   [-1, 1],
@@ -33,74 +32,59 @@ OR_y = np.array([
   [-1]
 ])
 
-X, y = datasets.make_blobs(n_samples=150,
+RANDOM_X, RANDOM_y = datasets.make_blobs(n_samples=150,
                             n_features=2,
                             centers=2,
                             cluster_std=1.05,
                             random_state=2)
-
-# fig = plt.figure(figsize=(10,8))
-# plt.plot(X[:, 0][y == 0], X[:, 1][y == 0], 'r^')
-# plt.plot(X[:, 0][y == 1], X[:, 1][y == 1], 'bs')
-# plt.xlabel("feature 1")
-# plt.ylabel("feature 2")
-# plt.title('Random Classification Data with 2 classes')
-
-# y = np.where(y == 0, -1, 1).reshape(len(y), 1)
-
+RANDOM_y = np.where(RANDOM_y == 0, -1, 1)
 
 def run_simple():
-  X, y = AND_X, AND_y
 
-  p = Perceptron(20, 100)
+  X = AND_X
+  y = AND_y
+  y = y.reshape(len(y),)
+  print("X", X, X.shape)
+  print("y", y, y.shape)
 
-  theta, error, n_epochs = p.train(X, y)
+  p = Perceptron(1, 10000)
+
+  theta, error, n_epochs = p.train(X, y.reshape(len(y), 1))
   print("theta\n", theta)
   print("finished training with error:", error)
-  print("epochs", n_epochs)
+  print("epochs:", n_epochs)
 
-  predictions = p.predict(X)
-  print("predictions")
-  print(predictions)
-
-  error = np.abs(y - predictions)
-  print(f"prediction error = {error}")
+  utils.plot_simple_perceptron(X, y, theta)
 
 def run_linear():
   data = np.genfromtxt(fname="./TP2-ej2-conjunto.csv", skip_header=1, delimiter=',', dtype=np.float64)
-  X, y = data[:, :-1], data[:,-1].reshape(len(data), 1)
+  print(data)
 
-  X = add_bias(X)
-  # X_esc, y_esc = escale_all(X), escale_all(y)
+  # extract features and labels (as column data)
+  X, y = data[:, :-1], data[:,-1][:, np.newaxis]
 
-  print("X")
-  print(X)
-  print("y")
-  print(y)
+  # plot each feature against the label
+  # for i in range(X.shape[1]):
+  #   sns.relplot(data, x=data[:,i], y=data[:,-1])
+  #   plt.show()
 
-  # sns.relplot(data, x=data[:,0], y=data[:,-1])
-  # plt.show()
-  # sns.relplot(data, x=data[:,1], y=data[:,-1])
-  # plt.show()
-  # sns.relplot(data, x=data[:,2], y=data[:,-1])
-  # plt.show()
+  p = LinearPerceptron(0.00001, 1000000)
 
-  n = 0.1
-  for i in range(10):
-    p = LinearPerceptron(n, 1000)
-    weights, error =  p.train(X, y)
-    
-    print('_______________')
-    print(n)
-    print(weights)
-    print(error)
-    n = n/10
+  theta, error, epochs = p.train(X, y)
+  print("theta", theta)
+  print("error", error)
+  print("epochs", epochs)
+  os = p.predict(X)
+  print("os", os)
+  print("y-os", y-os)
+
+
 
 def run_nonlinear():
   pass
 
 def main():
-  run_simple()
+  run_linear()
 
 if __name__ == "__main__":
   main()
