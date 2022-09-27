@@ -41,11 +41,17 @@ RANDOM_y = np.where(RANDOM_y == 0, -1, 1)
 
 def run_simple():
 
-  X = AND_X
-  y = AND_y
+  X = RANDOM_X[:120,:]
+  y = RANDOM_y[:120]
+  X_hat = RANDOM_X[120:, :]
+  y_hat = RANDOM_y[120:]
   y = y.reshape(len(y),)
+  y_hat = y_hat.reshape(len(y_hat),)
+
   print("X", X, X.shape)
   print("y", y, y.shape)
+  print("X_hat", X_hat, X_hat.shape)
+  print("y_hat", y_hat, y_hat.shape)
 
   p = Perceptron(1, 10000)
 
@@ -54,7 +60,10 @@ def run_simple():
   print("finished training with error:", error)
   print("epochs:", n_epochs)
 
-  utils.plot_simple_perceptron(X, y, theta)
+  utils.plot_simple_perceptron(X, y, theta, title="Training")
+
+  pred = p.predict(X_hat)
+  utils.plot_simple_perceptron(X_hat, pred.reshape(len(pred),), p.weights, title="Testing")
 
 def run_linear():
   data = np.genfromtxt(fname="./TP2-ej2-conjunto.csv", skip_header=1, delimiter=',', dtype=np.float64)

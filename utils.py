@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_simple_perceptron(X, y, theta):
-  ymin, ymax = np.min(X[:,0]) * 1.2, np.max(X[:,0]) * 1.2
+def plot_simple_perceptron(X, y, theta, title="Classification of 2 classes"):
+  ymin, ymax = -5, 5
   print(f"ymin = {ymin} ymax = {ymax}")
   u = theta[0]
   w = theta[1:]
@@ -15,6 +15,6 @@ def plot_simple_perceptron(X, y, theta):
   plt.plot(X[:, 0][y == 1], X[:, 1][y == 1], 'bs')
   plt.xlabel("feature 1")
   plt.ylabel("feature 2")
-  plt.title('Random Classification Data with 2 classes')
+  plt.title(title)
   plt.plot(xx, yy, 'k-')
   plt.show()
