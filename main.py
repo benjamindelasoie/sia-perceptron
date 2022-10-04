@@ -3,7 +3,7 @@ from sklearn import datasets
 import seaborn as sns
 import matplotlib.pyplot as plt
 from normalize import *
-from perceptron import LinearPerceptron, NonLinearPerceptron, Perceptron
+from perceptron import Perceptron, LinearPerceptron, NonLinearPerceptron
 import utils
 
 AND_X = np.array([
@@ -77,7 +77,15 @@ def run_linear():
   #   sns.relplot(data, x=data[:,i], y=data[:,-1])
   #   plt.show()
 
-  p = LinearPerceptron(0.00001, 1000000)
+  p = LinearPerceptron(0.005, 10000)
+
+  #X = np.arange(11)
+  #print(X)
+  #n = X.size
+  #X = X.reshape(n, 1)
+  #print(X)
+  #y = X*2
+  #print(y)
 
   theta, error, epochs = p.train(X, y)
   print("theta", theta)
@@ -85,12 +93,44 @@ def run_linear():
   print("epochs", epochs)
   os = p.predict(X)
   print("os", os)
-  print("y-os", y-os)
+  print("y", y)
 
 
 
 def run_nonlinear():
-  pass
+  data = np.genfromtxt(fname="./TP2-ej2-conjunto.csv", skip_header=1, delimiter=',', dtype=np.float64)
+  print(data)
+
+  # extract features and labels (as column data)
+  X, y = data[:, :-1], data[:, -1][:, np.newaxis]
+
+  # plot each feature against the label
+  # for i in range(X.shape[1]):
+  #   sns.relplot(data, x=data[:,i], y=data[:,-1])
+  #   plt.show()
+
+  p = NonLinearPerceptron(0.005, 100000)
+
+  print("min",min(y))
+  print("max",max(y))
+
+
+
+  y_norm = (2 * (y - min(y))/(max(y)-min(y))) - 1
+  # y_norm = (y - min(y))/(max(y)-min(y))  para la funcion sigmoida
+
+  theta, error, epochs = p.train(X, y_norm)
+  print("theta", theta)
+  print("error", error)
+  print("epochs", epochs)
+  os = p.predict(X)
+  print("os", os)
+  print("y", y_norm)
+
+  error_abs = np.abs(y_norm - os)
+  print("error_abs", error_abs)
+  mean_error=np.mean(error_abs)
+  print("mean_error",mean_error)
 
 def main():
   run_linear()

@@ -16,12 +16,23 @@ def id_function(x):
 def one_function(x):
   return 1.
 
+def tanh(x):
+  beta = 10
+  return np.tanh(beta * x)
+
+
+def tanh_derivative(x):
+  beta = 10
+  return beta * (1 - tanh(x))
+
 def logistic_function(x):
-  return (1 / (1 + np.exp(-x)))
+  beta = 10
+  return (1 / (1 + np.exp(-2 * beta * x)))
+
 
 def logistic_derivative(x):
-  f = logistic_function
-  return f(x) * (1 - f(x))
+  beta = 10
+  return 2 * beta * logistic_function(x) * (1 - logistic_function(x))
 
 def simple_error(X, y, w, f):
   hs = h(X, w)
@@ -29,20 +40,31 @@ def simple_error(X, y, w, f):
   error = np.sum(np.abs(y - os))
   return error
 
+
 def mean_squared_error(X, y, w, f):
-  # print("mean_squared_error")
-  n, *p = X.shape
   hs = h(X, w)
   os = f(hs)
-  # print("os", os, os.shape)
-  # print("y", y, y.shape)
-  # print("y - os", y - os, (y-os).shape)
-  error = (1 / n) * np.sum((y - os) ** 2)
+  error = ((y - os) ** 2).mean()
   return error
 
-def add_bias(X):
+def delta_w_nonlinear(lr, X, mu, y, w, g, g_prime):
+    os = g(h(X, w))
+    hmu = h(X[mu], w)
+    return lr * 2 * np.mean(y - os) * g_prime(hmu) * X[mu]
+
+def delta_w_linear(lr, X, mu, y, w, g, g_prime):
+  os = g(h(X, w))
+  return lr * 2 * np.mean(y - os) * X[mu]
+
+
+def delta_w_simple(lr, X, mu, y, w, g, g_prime):
+  exc = h(X[mu], w)
+  o = g(exc)
+  return lr * (y[mu] - o) * X[mu]
+
+def add_bias(X, value):
   n, *p = X.shape
-  bias = np.repeat(-1, n).reshape((n, 1))
+  bias = np.repeat(value, n).reshape((n, 1))
   n = np.concatenate((bias, X), axis=1)
   return n
 
@@ -53,9 +75,12 @@ class Perceptron:
     self.weights = None
     self.g = step_function
     self.error_function = simple_error
+    self.bias = -1
+    self.delta_w_f= delta_w_simple
+    self.g_prime = one_function ## para que no tire error
 
   def train(self, X, y):
-    X = add_bias(X)
+    X = add_bias(X, self.bias)
     n, p = X.shape
     weights = np.zeros(shape=(p, 1))
 
@@ -64,14 +89,14 @@ class Perceptron:
     error_min = 100000000
     w_min = weights
     
-    while (error_min > 0 and i < self.epochs):
+    while (error_min > 0.01 and i < self.epochs):
       # take a random sample
       mu = rng.integers(0, n)
-      exc = h(X[mu], weights)          # excitement 
-      o = self.g(exc)              # activation
+      ##exc = h(X[mu], weights)          # excitement
+      ##o = self.g(exc)              # activation
 
       # update weights
-      delta_w = self.lr * (y[mu] - o) * X[mu]
+      delta_w = self.delta_w_f(self.lr, X, mu, y, weights, self.g, self.g_prime)
       delta_w = delta_w.reshape(p, 1)
 
       weights = weights + delta_w
@@ -85,12 +110,12 @@ class Perceptron:
       i = i + 1
 
     self.weights = w_min
-    error = self.error_function(X, y, weights, self.g)
+    error = self.error_function(X, y, weights, self.g) ##podria ser error_min
     return self.weights, error, i
 
   def predict(self, X):
     if self.weights is not None:
-      X = add_bias(X)
+      X = add_bias(X, self.bias)
       hs = h(X, self.weights)
       predictions = np.apply_along_axis(self.g, 1, hs)
       return predictions
@@ -104,48 +129,15 @@ class LinearPerceptron(Perceptron):
     self.g = id_function
     self.g_prime = one_function
     self.error_function = mean_squared_error
+    self.bias = 1
+    self.delta_w_f = delta_w_linear
 
-  def train(self, X, y):
-    X = add_bias(X)
-    n, p = X.shape
-    i = 0
-    weights = np.zeros(shape=(p, 1))
-    error = 0
-    error_min = 100000000
-    w_min = weights
-    
-    while (error_min > 0 and i < self.epochs):
-      hs = h(X, weights)
-      # print("hs", hs, hs.shape)
-      os = self.g(hs)
-      # print("os", os, os.shape)
-      der = np.apply_along_axis(self.g_prime, 1, hs).reshape(n, 1)
-      # print("der", der, der.shape)
-
-      # print("y - os", y-os, (y-os).shape)
-      # print()
-      delta_w = self.lr * (1/n) * np.sum((y - os) * X, axis=0)
-      # print("delta_w", delta_w, delta_w.shape)
-      delta_w = delta_w.reshape(p, 1)
-
-      weights = weights + delta_w
-      # print("weights", weights, weights.shape)
-
-      error = self.error_function(X, y, weights, self.g)
-      # print("error", error, error.shape)
-      if (error < error_min):
-        error_min = error
-        w_min = weights
-
-      i = i + 1
-
-    self.weights = w_min
-    error = self.error_function(X, y, weights, self.g)
-    return self.weights, error, i
 
 class NonLinearPerceptron(Perceptron):
   def __init__(self, learning_rate, epochs) -> None:
     super().__init__(learning_rate, epochs)
-    self.g = logistic_function
-    self.g_prime = logistic_derivative
-    self.error_function = mean_squared_error 
+    self.g = tanh
+    self.g_prime = tanh_derivative
+    self.error_function = mean_squared_error
+    self.bias = 1
+    self.delta_w_f = delta_w_nonlinear
