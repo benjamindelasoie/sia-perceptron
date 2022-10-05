@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 from normalize import escale_all
@@ -17,13 +19,13 @@ def one_function(x):
   return 1.
 
 def tanh(x):
-  beta = 10
+  beta = 0.1
   return np.tanh(beta * x)
 
 
 def tanh_derivative(x):
-  beta = 10
-  return beta * (1 - tanh(x))
+  beta = 0.1
+  return beta * (1 - (tanh(beta * x))**2)
 
 def logistic_function(x):
   beta = 10
@@ -44,17 +46,49 @@ def simple_error(X, y, w, f):
 def mean_squared_error(X, y, w, f):
   hs = h(X, w)
   os = f(hs)
-  error = ((y - os) ** 2).mean()
-  return error
+  return np.mean((y - os) ** 2)
 
-def delta_w_nonlinear(lr, X, mu, y, w, g, g_prime):
-    os = g(h(X, w))
-    hmu = h(X[mu], w)
-    return lr * 2 * np.mean(y - os) * g_prime(hmu) * X[mu]
+def delta_w_nonsimple(lr, X, mu, y, w, g, g_prime):
+    hs = h(X, w)
+    #print("hs",  hs)
+    os = g(hs)
+    g_primes = np.apply_along_axis(g_prime, 0, hs)
 
-def delta_w_linear(lr, X, mu, y, w, g, g_prime):
-  os = g(h(X, w))
-  return lr * 2 * np.mean(y - os) * X[mu]
+    #print("gprime", g_primes)
+
+    X = X.T
+
+    delta = np.zeros(w.T.shape)
+
+
+    for i in range(w.T.size):
+      delta[0][i] = lr * 2 * np.mean((y - os) * g_primes * X[i].reshape(os.shape))
+
+    return delta
+
+
+##NO SE USA
+#def delta_w_linear(lr, X, mu, y, w, g, g_prime):
+  #os = g(h(X, w))
+  #for i in range(y.size):
+  #  for j in range()
+  #X = X.T
+  #y=y.T
+  #os=os.T
+
+  #delta = np.zeros(w.T.shape)
+
+
+  #for i in range(w.T.size):
+    #print(lr * 2 * np.mean((y - os) * X[i]))
+    #delta[0][i] = lr * 2 * np.mean((y - os) * X[i].reshape(os.shape))
+
+
+  #print("delta", delta)
+  #r =np.array(lr * 2 * np.mean(y - os) * X)
+  #print("r", r)
+  #print(np.sum(r, axis=0))
+  #return delta
 
 
 def delta_w_simple(lr, X, mu, y, w, g, g_prime):
@@ -76,36 +110,41 @@ class Perceptron:
     self.g = step_function
     self.error_function = simple_error
     self.bias = -1
-    self.delta_w_f= delta_w_simple
+    self.delta_w_f = delta_w_simple
     self.g_prime = one_function ## para que no tire error
 
   def train(self, X, y):
     X = add_bias(X, self.bias)
     n, p = X.shape
     weights = np.zeros(shape=(p, 1))
+    mus = np.array(range(n))
+
 
     i = 0
     error = 0
     error_min = 100000000
     w_min = weights
     
-    while (error_min > 0.01 and i < self.epochs):
+    while (error_min > 0.005 and i < self.epochs):
+      random.shuffle(mus)
       # take a random sample
-      mu = rng.integers(0, n)
+      for mu in mus:
+
+      #mu = rng.integers(0, n)
       ##exc = h(X[mu], weights)          # excitement
       ##o = self.g(exc)              # activation
 
       # update weights
-      delta_w = self.delta_w_f(self.lr, X, mu, y, weights, self.g, self.g_prime)
-      delta_w = delta_w.reshape(p, 1)
+        delta_w = self.delta_w_f(self.lr, X, mu, y, weights, self.g, self.g_prime)
+        delta_w = delta_w.reshape(p, 1)
 
-      weights = weights + delta_w
+        weights = weights + delta_w
 
       # calculate error
-      error = self.error_function(X, y, weights, self.g)
-      if (error < error_min):
-        error_min = error
-        w_min = weights
+        error = self.error_function(X, y, weights, self.g)
+        if (error < error_min):
+          error_min = error
+          w_min = weights
       
       i = i + 1
 
@@ -120,8 +159,6 @@ class Perceptron:
       predictions = np.apply_along_axis(self.g, 1, hs)
       return predictions
 
-# NO ESTAN FUNCIONANDO
-# normalizo X, y
 
 class LinearPerceptron(Perceptron):
   def __init__(self, learning_rate, epochs) -> None:
@@ -130,7 +167,7 @@ class LinearPerceptron(Perceptron):
     self.g_prime = one_function
     self.error_function = mean_squared_error
     self.bias = 1
-    self.delta_w_f = delta_w_linear
+    self.delta_w_f = delta_w_nonsimple
 
 
 class NonLinearPerceptron(Perceptron):
@@ -140,4 +177,4 @@ class NonLinearPerceptron(Perceptron):
     self.g_prime = tanh_derivative
     self.error_function = mean_squared_error
     self.bias = 1
-    self.delta_w_f = delta_w_nonlinear
+    self.delta_w_f = delta_w_nonsimple

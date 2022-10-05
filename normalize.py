@@ -1,6 +1,6 @@
 import numpy as np
 
-def escale(data, interval=(0., 1.)):
+def escale(data, interval=(-1., 1.)):
   a, b = interval
   max, min = np.max(data), np.min(data)
   if max == min:

@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 from sklearn import datasets
 import seaborn as sns
@@ -77,7 +79,7 @@ def run_linear():
   #   sns.relplot(data, x=data[:,i], y=data[:,-1])
   #   plt.show()
 
-  p = LinearPerceptron(0.005, 10000)
+  p = LinearPerceptron(0.005, 1000)
 
   #X = np.arange(11)
   #print(X)
@@ -109,14 +111,22 @@ def run_nonlinear():
   #   sns.relplot(data, x=data[:,i], y=data[:,-1])
   #   plt.show()
 
-  p = NonLinearPerceptron(0.005, 100000)
+  p = NonLinearPerceptron(0.005, 1000)
 
-  print("min",min(y))
-  print("max",max(y))
+  #print("min", min(y))
+  #print("max", max(y))
+
+  #X = np.array([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5])
+  #print(X)
+  #n = X.size
+  #X = X.reshape(n, 1)
+  #print(X)
+  #y = X*0.1
+  #print(y)
 
 
-
-  y_norm = (2 * (y - min(y))/(max(y)-min(y))) - 1
+  y_norm = escale_all(y)
+  #y_norm= 2 * (y - min(y))/(max(y)-min(y)) - 1
   # y_norm = (y - min(y))/(max(y)-min(y))  para la funcion sigmoida
 
   theta, error, epochs = p.train(X, y_norm)
@@ -130,10 +140,12 @@ def run_nonlinear():
   error_abs = np.abs(y_norm - os)
   print("error_abs", error_abs)
   mean_error=np.mean(error_abs)
-  print("mean_error",mean_error)
+  print("generalize_error", mean_error)
 
 def main():
-  run_linear()
+  run_nonlinear()
+
+
 
 if __name__ == "__main__":
   main()
