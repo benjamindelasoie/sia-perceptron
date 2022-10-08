@@ -6,6 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from normalize import *
 from perceptron import Perceptron, LinearPerceptron, NonLinearPerceptron
+from perceptronMulticapa import PerceptronMulticapa
 import utils
 
 AND_X = np.array([
@@ -43,7 +44,7 @@ RANDOM_y = np.where(RANDOM_y == 0, -1, 1)
 
 def run_simple():
 
-  X = RANDOM_X[:120,:]
+  X = RANDOM_X[:120, :]
   y = RANDOM_y[:120]
   X_hat = RANDOM_X[120:, :]
   y_hat = RANDOM_y[120:]
@@ -57,10 +58,10 @@ def run_simple():
 
   p = Perceptron(1, 10000)
 
-  theta, error, n_epochs = p.train(X, y.reshape(len(y), 1))
+  theta, errors, epochs = p.train(X, y.reshape(len(y), 1))
   print("theta\n", theta)
-  print("finished training with error:", error)
-  print("epochs:", n_epochs)
+  print("finished training with error:", errors[-1])
+  print("epochs:", epochs[-1])
 
   utils.plot_simple_perceptron(X, y, theta, title="Training")
 
@@ -72,16 +73,14 @@ def run_linear():
   print(data)
 
   # extract features and labels (as column data)
-  X, y = data[:, :-1], data[:,-1][:, np.newaxis]
+  X, y = data[:, :-1], data[:, -1][:, np.newaxis]
 
   # plot each feature against the label
   # for i in range(X.shape[1]):
   #   sns.relplot(data, x=data[:,i], y=data[:,-1])
   #   plt.show()
 
-  p = LinearPerceptron(0.005, 1000)
-
-  #X = np.arange(11)
+  #X = np.arange(15)
   #print(X)
   #n = X.size
   #X = X.reshape(n, 1)
@@ -89,13 +88,38 @@ def run_linear():
   #y = X*2
   #print(y)
 
-  theta, error, epochs = p.train(X, y)
+  max_epochs = 10
+  iters = 100
+  beta = 0.01
+  eta = 0.005
+
+  error_mat = np.zeros((iters, max_epochs))
+  for i in range(iters):
+    p = LinearPerceptron(eta, max_epochs, beta) #eta, un rango de ejemplo es entre 10-4 o 10-1.
+    theta, errors, epochs = p.train(X, y)
+    error_mat[i] = np.array(errors)
+
+  print(error_mat)
+  error_acum = np.sum(error_mat, axis=0)
+  means = error_acum / iters
+
+  stds = []
+
+  for i in range(means.size):
+    stds.append(np.sqrt(np.mean(error_mat.T[i] - means[i])**2))
+
+  print("stds", stds)
+
+
+
   print("theta", theta)
-  print("error", error)
-  print("epochs", epochs)
+  print("error", errors[-1])
+  print("epochs", epochs[-1])
   os = p.predict(X)
   print("os", os)
   print("y", y)
+
+  utils.plot_error(means, stds, epochs)
 
 
 
@@ -111,8 +135,14 @@ def run_nonlinear():
   #   sns.relplot(data, x=data[:,i], y=data[:,-1])
   #   plt.show()
 
-  p = NonLinearPerceptron(0.005, 1000)
+  max_epochs = 10
+  iters = 100
+  beta = 0.01
+  eta = 0.005
 
+  p = NonLinearPerceptron(eta, max_epochs, beta)
+
+  y_norm = escale_all(y)
   #print("min", min(y))
   #print("max", max(y))
 
@@ -125,14 +155,14 @@ def run_nonlinear():
   #print(y)
 
 
-  y_norm = escale_all(y)
+
   #y_norm= 2 * (y - min(y))/(max(y)-min(y)) - 1
   # y_norm = (y - min(y))/(max(y)-min(y))  para la funcion sigmoida
 
-  theta, error, epochs = p.train(X, y_norm)
+  theta, errors, epochs = p.train(X, y_norm)
   print("theta", theta)
-  print("error", error)
-  print("epochs", epochs)
+  print("error", errors[-1])
+  print("epochs", epochs[-1])
   os = p.predict(X)
   print("os", os)
   print("y", y_norm)
@@ -142,8 +172,23 @@ def run_nonlinear():
   mean_error=np.mean(error_abs)
   print("generalize_error", mean_error)
 
+  utils.plot_error(errors, epochs)
+
+
+
+def run_multicapa_xor():
+  xor= PerceptronMulticapa(0.005, 100000, 2, 2, 1)
+
+  error, iter = xor.train(OR_X,OR_y)
+
+  print("error", error)
+  print("epochs", iter)
+
+  print(xor.predict(OR_X))
+
+
 def main():
-  run_nonlinear()
+  run_linear()
 
 
 
