@@ -90,12 +90,11 @@ def run_linear():
 
   max_epochs = 10
   iters = 100
-  beta = 0.01
   eta = 0.005
 
   error_mat = np.zeros((iters, max_epochs))
   for i in range(iters):
-    p = LinearPerceptron(eta, max_epochs, beta) #eta, un rango de ejemplo es entre 10-4 o 10-1.
+    p = LinearPerceptron(eta, max_epochs) #eta, un rango de ejemplo es entre 10-4 o 10-1.
     theta, errors, epochs = p.train(X, y)
     error_mat[i] = np.array(errors)
 

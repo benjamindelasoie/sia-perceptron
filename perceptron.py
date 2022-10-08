@@ -103,14 +103,14 @@ def add_bias(X, value):
   return n
 
 class Perceptron:
-  def __init__(self, learning_rate, epochs, beta) -> None:
+  def __init__(self, learning_rate, epochs) -> None:
     self.lr = learning_rate
     self.epochs = epochs
     self.weights = None
     self.g = step_function
     self.error_function = simple_error
     self.bias = -1
-    self.beta = beta
+    self.beta = None
     self.delta_w_f = delta_w_simple
     self.g_prime = one_function ## para que no tire error
 
@@ -167,8 +167,8 @@ class Perceptron:
 
 
 class LinearPerceptron(Perceptron):
-  def __init__(self, learning_rate, epochs, beta) -> None:
-    super().__init__(learning_rate, epochs, beta)
+  def __init__(self, learning_rate, epochs) -> None:
+    super().__init__(learning_rate, epochs)
     self.g = id_function
     self.g_prime = one_function
     self.error_function = mean_squared_error
@@ -178,9 +178,10 @@ class LinearPerceptron(Perceptron):
 
 class NonLinearPerceptron(Perceptron):
   def __init__(self, learning_rate, epochs, beta) -> None:
-    super().__init__(learning_rate, epochs, beta)
+    super().__init__(learning_rate, epochs)
     self.g = tanh
     self.g_prime = tanh_derivative
+    self.beta = beta
     self.error_function = mean_squared_error
     self.bias = 1
     self.delta_w_f = delta_w_nonsimple
