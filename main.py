@@ -153,7 +153,7 @@ def run_multi():
 
 
 def main():
-    with open('../config.json', 'r') as f:
+    with open('config.json', 'r') as f:
         config = json.load(f)
     perceptron = config['perceptron']
 
@@ -163,7 +163,7 @@ def main():
         run_linear()
     if perceptron['no-lineal']:
         run_nonlinear()
-    if perceptron['multicapa']:
+    if perceptron['multilayer']:
         run_multi()
 
 

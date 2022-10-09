@@ -3,7 +3,7 @@
         "simple": false,
         "lineal": false,
         "no-lineal": false,
-        "multicapa": true
+        "multilayer": true
     }
 
 }
