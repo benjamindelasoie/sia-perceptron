@@ -1,0 +1,9 @@
+{
+    "perceptron": {
+        "simple": true,
+        "lineal": false,
+        "no-lineal": false,
+        "multicapa": false
+    },
+
+}
