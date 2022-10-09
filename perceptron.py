@@ -35,7 +35,7 @@ def tanh_derivative(x):
 
 def logistic_function(x):
     beta = 10
-    return (1 / (1 + np.exp(-2 * beta * x)))
+    return 1 / (1 + np.exp(-2 * beta * x))
 
 
 def logistic_derivative(x):
@@ -72,30 +72,6 @@ def delta_w_nonsimple(lr, X, mu, y, w, g, g_prime):
         delta[0][i] = lr * 2 * np.mean((y - os) * g_primes * X[i].reshape(os.shape))
 
     return delta
-
-
-##NO SE USA
-# def delta_w_linear(lr, X, mu, y, w, g, g_prime):
-# os = g(h(X, w))
-# for i in range(y.size):
-#  for j in range()
-# X = X.T
-# y=y.T
-# os=os.T
-
-# delta = np.zeros(w.T.shape)
-
-
-# for i in range(w.T.size):
-# print(lr * 2 * np.mean((y - os) * X[i]))
-# delta[0][i] = lr * 2 * np.mean((y - os) * X[i].reshape(os.shape))
-
-
-# print("delta", delta)
-# r =np.array(lr * 2 * np.mean(y - os) * X)
-# print("r", r)
-# print(np.sum(r, axis=0))
-# return delta
 
 
 def delta_w_simple(lr, X, mu, y, w, g, g_prime):

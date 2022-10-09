@@ -5,6 +5,8 @@ import numpy as np
 from sklearn import datasets
 import seaborn as sns
 import matplotlib.pyplot as plt
+
+from multilayer import MultilayerPerceptron
 from normalize import *
 from perceptron import Perceptron, LinearPerceptron, NonLinearPerceptron
 import utils
@@ -22,13 +24,13 @@ AND_y = np.array([
     [1]
 ])
 
-OR_X = np.array([
+XOR_X = np.array([
     [-1, 1],
     [1, -1],
     [-1, -1],
     [1, 1]])
 
-OR_y = np.array([
+XOR_y = np.array([
     [1],
     [1],
     [-1],
@@ -143,6 +145,13 @@ def run_nonlinear():
     print("generalize_error", mean_error)
 
 
+def run_multi():
+    mlp = MultilayerPerceptron(XOR_X, XOR_y, 0.2, 5000)
+    mlp.train()
+    mlp.plot_errors()
+    mlp.plot()
+
+
 def main():
     with open('../config.json', 'r') as f:
         config = json.load(f)
@@ -155,7 +164,7 @@ def main():
     if perceptron['no-lineal']:
         run_nonlinear()
     if perceptron['multicapa']:
-        print("DO STUFF")
+        run_multi()
 
 
 
