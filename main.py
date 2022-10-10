@@ -4,6 +4,7 @@ import numpy as np
 from sklearn import datasets
 import seaborn as sns
 import matplotlib.pyplot as plt
+from perceptronMulticapa import PerceptronMulticapa
 from normalize import *
 from perceptron import Perceptron, LinearPerceptron, NonLinearPerceptron
 import utils
@@ -142,8 +143,22 @@ def run_nonlinear():
   mean_error=np.mean(error_abs)
   print("generalize_error", mean_error)
 
+
+def run_multicapa_xor():
+  xor= PerceptronMulticapa(0.005, 100000, np.array([2, 3, 1]))
+
+  xor.train(OR_X, OR_y)
+
+  print(xor.predict(OR_X))
+
+
+  #print("error", error)
+  #print("epochs", iter)
+
+  #print(xor.predict(OR_X))
+
 def main():
-  run_nonlinear()
+  run_multicapa_xor()
 
 
 
