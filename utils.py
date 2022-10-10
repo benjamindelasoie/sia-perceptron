@@ -1,5 +1,28 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
+
+
+def data_import(file, qty):
+    input_file = open(file, 'r')
+    csv_reader = csv.reader(input_file, delimiter=" ")
+    data = []
+    entry = []
+    count_row = 0
+    for i in csv_reader:
+        if qty == 1:
+            entry = [float(value) for value in i if value != '']
+            data.append(entry)
+        else:
+            count_row += 1
+            for value in i:
+                if value != '':
+                    entry.append(float(value))
+            if count_row == qty:
+                data.append(entry)
+                entry = []
+                count_row = 0
+    return data
 
 
 def plot_simple_perceptron(X, y, theta, title="Classification of 2 classes"):

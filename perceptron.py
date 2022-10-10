@@ -30,7 +30,7 @@ def tanh(x):
 
 def tanh_derivative(x):
     beta = 0.1
-    return beta * (1 - (tanh(beta * x)) ** 2)
+    return beta * (1 - (np.tanh(beta * x)) ** 2)
 
 
 def logistic_function(x):
