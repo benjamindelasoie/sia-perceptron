@@ -88,7 +88,7 @@ def add_bias(X, value):
 
 
 class Perceptron:
-    def __init__(self, learning_rate, epochs) -> None:
+    def __init__(self, learning_rate, epochs, error_min) -> None:
         self.lr = learning_rate
         self.epochs = epochs
         self.weights = None
@@ -97,6 +97,7 @@ class Perceptron:
         self.bias = -1
         self.delta_w_f = delta_w_simple
         self.g_prime = one_function  ## para que no tire error
+        self.error_min = error_min
 
     def train(self, X, y):
         X = add_bias(X, self.bias)
@@ -106,7 +107,7 @@ class Perceptron:
 
         i = 0
         error = 0
-        error_min = 100000000
+        error_min = self.error_min
         w_min = weights
 
         while (error_min > 0.005 and i < self.epochs):
@@ -145,20 +146,22 @@ class Perceptron:
 
 
 class LinearPerceptron(Perceptron):
-    def __init__(self, learning_rate, epochs) -> None:
-        super().__init__(learning_rate, epochs)
+    def __init__(self, learning_rate, epochs, error_min) -> None:
+        super().__init__(learning_rate, epochs, error_min)
         self.g = id_function
         self.g_prime = one_function
         self.error_function = mean_squared_error
         self.bias = 1
         self.delta_w_f = delta_w_nonsimple
+        self.error_min = error_min
 
 
 class NonLinearPerceptron(Perceptron):
-    def __init__(self, learning_rate, epochs) -> None:
-        super().__init__(learning_rate, epochs)
+    def __init__(self, learning_rate, epochs, error_min) -> None:
+        super().__init__(learning_rate, epochs, error_min)
         self.g = tanh
         self.g_prime = tanh_derivative
         self.error_function = mean_squared_error
         self.bias = 1
         self.delta_w_f = delta_w_nonsimple
+        self.error_min = error_min

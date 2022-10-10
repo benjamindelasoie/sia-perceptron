@@ -1,9 +1,29 @@
 {
     "perceptron": {
-        "simple": false,
-        "lineal": false,
-        "no-lineal": false,
-        "multilayer": true
+        "simple":{
+            "activated": true,
+            "epochs" : 10000,
+            "learning_rate" : 1,
+            "error_min": 100000000
+
+        },
+        "lineal": {
+            "activated": true,
+            "epochs" : 1000,
+            "learning_rate" : 0.005,
+            "error_min": 100000000
+
+        },
+        "no-lineal": {
+            "activated": true,
+            "epochs" : 1000,
+            "learning_rate" : 0.005,
+            "error_min": 100000000
+
+        },
+        "multilayer": {
+            "activated": false
+        }
     }
 
 }

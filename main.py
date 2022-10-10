@@ -45,7 +45,7 @@ RANDOM_X, RANDOM_y = datasets.make_blobs(n_samples=150,
 RANDOM_y = np.where(RANDOM_y == 0, -1, 1)
 
 
-def run_simple():
+def run_simple(epochs, learning_rate, error_min):
     X = RANDOM_X[:120, :]
     y = RANDOM_y[:120]
     X_hat = RANDOM_X[120:, :]
@@ -58,7 +58,7 @@ def run_simple():
     print("X_hat", X_hat, X_hat.shape)
     print("y_hat", y_hat, y_hat.shape)
 
-    p = Perceptron(1, 10000)
+    p = Perceptron(learning_rate, epochs, error_min)
 
     theta, error, n_epochs = p.train(X, y.reshape(len(y), 1))
     print("theta\n", theta)
@@ -71,7 +71,7 @@ def run_simple():
     utils.plot_simple_perceptron(X_hat, pred.reshape(len(pred), ), p.weights, title="Testing")
 
 
-def run_linear():
+def run_linear(epochs, learning_rate, error_min):
     data = np.genfromtxt(fname="./TP2-ej2-conjunto.csv", skip_header=1, delimiter=',', dtype=np.float64)
     print(data)
 
@@ -83,7 +83,7 @@ def run_linear():
     #   sns.relplot(data, x=data[:,i], y=data[:,-1])
     #   plt.show()
 
-    p = LinearPerceptron(0.005, 1000)
+    p = LinearPerceptron(learning_rate, epochs, error_min)
 
     # X = np.arange(11)
     # print(X)
@@ -102,7 +102,7 @@ def run_linear():
     print("y", y)
 
 
-def run_nonlinear():
+def run_nonlinear(epochs, learning_rate, error_min):
     data = np.genfromtxt(fname="./TP2-ej2-conjunto.csv", skip_header=1, delimiter=',', dtype=np.float64)
     print(data)
 
@@ -114,7 +114,7 @@ def run_nonlinear():
     #   sns.relplot(data, x=data[:,i], y=data[:,-1])
     #   plt.show()
 
-    p = NonLinearPerceptron(0.005, 1000)
+    p = NonLinearPerceptron(learning_rate, epochs, error_min)
 
     # print("min", min(y))
     # print("max", max(y))
@@ -156,16 +156,19 @@ def main():
     with open('config.json', 'r') as f:
         config = json.load(f)
     perceptron = config['perceptron']
+    simple = perceptron['simple']
+    linear = perceptron['lineal']
+    non_linear = perceptron['no-lineal']
+    multilayer = perceptron['multilayer']
 
-    if perceptron['simple']:
-        run_simple()
-    if perceptron['lineal']:
-        run_linear()
-    if perceptron['no-lineal']:
-        run_nonlinear()
-    if perceptron['multilayer']:
+    if simple['activated']:
+        run_simple(simple['epochs'], simple['learning_rate'], simple['error_min'])
+    if linear['activated']:
+        run_linear(linear['epochs'], linear['learning_rate'], linear['error_min'])
+    if non_linear['activated']:
+        run_nonlinear(non_linear['epochs'], non_linear['learning_rate'], non_linear['error_min'])
+    if multilayer['activated']:
         run_multi()
-
 
 
 if __name__ == "__main__":
