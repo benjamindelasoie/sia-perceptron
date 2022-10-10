@@ -1,40 +1,7 @@
-import random
 
 import numpy as np
 from layers import FinalLayer, Layer
 
-rng = np.random.default_rng()
-
-
-def h(X, weights):
-  return np.dot(X, weights)
-
-def id_function(x):
-  return x
-
-def one_function(x):
-  return 1.
-
-def tanh(x):
-  beta = 100
-  return np.tanh(beta * x)
-
-
-def tanh_derivative(x):
-  beta = 100
-  return beta * (1 - (tanh(beta * x))**2)
-
-
-def sigmoid_function(x):
-  return 1 / (1 + np.exp(-x))
-
-
-def sigmoid_derivative(x):
-  return x * (1 - x)
-
-
-def mean_squared_error(y, os):
-  return np.mean((y - os) ** 2)
 
 def add_bias(X, value):
   n, *p = X.shape
@@ -62,9 +29,7 @@ class PerceptronMulticapa:
 
         #self.W1 = np.zeros((input_size + 1, hidden_size)) # +1 para el bias
         #self.W2 = np.zeros((hidden_size, output_size))
-        self.g = tanh
         self.bias = 1
-        self.g_prime = tanh_derivative  ## para que no tire error
 
 
 
@@ -114,40 +79,6 @@ class PerceptronMulticapa:
         X = add_bias(X, self.bias)
         return self.forward(X)
 
-
-
-
-
-
-
-
-
-
-
-
-
-    def ada(self,X):
-        X = add_bias(X, self.bias)
-        print("x", X)
-        print("W1", self.W1)
-        self.z1 = h(X, self.W1)
-        self.a1 = self.g(self.z1)
-        self.z2 = h(self.a1, self.W2)
-        self.output = self.g(self.z2)
-        return self.output
-
-    def backprop(self, X, y):
-        output = self.forward(X)
-        error_out = output - y
-        delta_out = error_out * self.g_prime(output)
-        derivative_W2 = np.dot(self.a1.T, delta_out)
-        error_hidden = np.dot(delta_out, self.W2.T)
-        delta_hidden = error_hidden * self.g_prime(self.a1)
-        derivative_W1 = np.dot(X.T, delta_hidden)
-        # gradient descent
-        self.W2 += derivative_W2 * self.lr
-        self.W1 += derivative_W1 * self.lr
-        return mean_squared_error(y, output)
 
 
 

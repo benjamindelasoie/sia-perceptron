@@ -145,7 +145,7 @@ def run_nonlinear():
 
 
 def run_multicapa_xor():
-  xor= PerceptronMulticapa(0.005, 100000, np.array([2, 3, 1]))
+  xor= PerceptronMulticapa(0.005, 1000, np.array([2, 2, 1]))
 
   xor.train(OR_X, OR_y)
 
