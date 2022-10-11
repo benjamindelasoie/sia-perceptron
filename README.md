@@ -14,7 +14,8 @@ pip install matplotlib
 
 ## Ejecución 🚀
 
-Para ejecutar el programa, primero se debe completar el archivo `config.json`. Completelo en base a la configuración deseada.
+Para ejecutar el programa, primero se debe completar el archivo `config.json` en base a la configuración deseada.
+Luego, se puede ejecutar en la terminal usando el siguiente comando:
 ```
 python main.py config.json
 ```
