@@ -2,6 +2,7 @@
 import utils
 import numpy as np
 from random import random
+import matplotlib.pyplot as plt
 
 
 class MultilayerPerceptron:
@@ -68,6 +69,7 @@ class MultilayerPerceptron:
 
 
     def train(self, inputs, targets, epochs, learning_rate):
+        errors = []
         for i in range(epochs):
             sum_errors = 0
 
@@ -84,11 +86,20 @@ class MultilayerPerceptron:
 
                 sum_errors += self._mse(target, output)
 
+
             if i+1 % 100 == 0:
                 print("Error: {} at epoch {}".format(sum_errors / len(inputs), i+1))
 
+            errors.append(sum_errors)
+
+        plt.plot(list(range(0,epochs)),errors)
+        plt.xlabel("Epochs")
+        plt.ylabel("Error")
+        plt.show()
+
         print("Training complete!")
         print("=====")
+        print(errors[-1])
 
 
     def gradient_descent(self, learningRate=1):
@@ -122,9 +133,9 @@ if __name__ == "__main__":
     print("inputs", inputs, type(inputs), inputs.size, inputs.shape)
     print("outputs", outputs, type(outputs), outputs.shape)
 
-    mlp = MultilayerPerceptron(35, list(np.repeat(35, 15)), 10)
+    mlp = MultilayerPerceptron(35, [10,15], 10)
 
-    mlp.train(inputs, outputs, 50000, 0.001)
+    mlp.train(inputs, outputs, 50000, 0.01)
 
     for input in inputs:
         # print(input)
