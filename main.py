@@ -144,9 +144,9 @@ def run_nonlinear(epochs, learning_rate, error_min):
     print("generalize_error", mean_error)
 
 
-def run_multi():
-    inputs = np.array(utils.data_import('TP2-ej3-digitos.txt', 7))
-    outputs = np.array(utils.data_import('TP2-ej3-c-expected.txt', 1), dtype=float)
+def run_multi(input_file, expected_file):
+    inputs = np.array(utils.data_import(input_file, 7))
+    outputs = np.array(utils.data_import(expected_file, 1), dtype=float)
 
 
     print("inputs", inputs, type(inputs), inputs.size, inputs.shape)
@@ -181,7 +181,7 @@ def main():
     if non_linear['activated']:
         run_nonlinear(non_linear['epochs'], non_linear['learning_rate'], non_linear['error_min'])
     if multilayer['activated']:
-        run_multi()
+        run_multi(multilayer['input_file'], multilayer['expected_file'])
 
 
 if __name__ == "__main__":

@@ -22,7 +22,9 @@
 
         },
         "multilayer": {
-            "activated": false
+            "activated": false,
+            "input_file": "TP2-ej3-digitos.txt",
+            "expected_file": "TP2-ej3-c-expected.txt"
         }
     }
 
