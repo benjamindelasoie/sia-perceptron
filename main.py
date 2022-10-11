@@ -1,12 +1,11 @@
 import json
 import random
-
 import numpy as np
 from sklearn import datasets
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from multilayer import MultilayerPerceptron
+from multilayer_perceptron import MultilayerPerceptron
 from normalize import *
 from perceptron import Perceptron, LinearPerceptron, NonLinearPerceptron
 import utils
@@ -146,10 +145,24 @@ def run_nonlinear(epochs, learning_rate, error_min):
 
 
 def run_multi():
-    mlp = MultilayerPerceptron(XOR_X, XOR_y, 0.2, 5000)
-    mlp.train()
-    mlp.plot_errors()
-    mlp.plot()
+    inputs = np.array(utils.data_import('TP2-ej3-digitos.txt', 7))
+    outputs = np.array(utils.data_import('TP2-ej3-c-expected.txt', 1), dtype=float)
+
+
+    print("inputs", inputs, type(inputs), inputs.size, inputs.shape)
+    print("outputs", outputs, type(outputs), outputs.shape)
+
+    mlp = MultilayerPerceptron(35, list(np.repeat(35, 15)), 10)
+
+    mlp.train(inputs, outputs, 50000, 0.001)
+
+    for input in inputs:
+        # print(input)
+        output = mlp.forward_propagate(input)
+
+
+        print()
+        print("Our network believes that {} = {} ".format(input, output))
 
 
 def main():
