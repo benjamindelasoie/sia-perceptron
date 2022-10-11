@@ -138,7 +138,6 @@ if __name__ == "__main__":
     mlp.train(inputs, outputs, 50000, 0.01)
 
     for input in inputs:
-        # print(input)
         output = mlp.forward_propagate(input)
 
 

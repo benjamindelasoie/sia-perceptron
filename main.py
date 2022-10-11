@@ -77,20 +77,7 @@ def run_linear(epochs, learning_rate, error_min):
     # extract features and labels (as column data)
     X, y = data[:, :-1], data[:, -1][:, np.newaxis]
 
-    # plot each feature against the label
-    # for i in range(X.shape[1]):
-    #   sns.relplot(data, x=data[:,i], y=data[:,-1])
-    #   plt.show()
-
     p = LinearPerceptron(learning_rate, epochs, error_min)
-
-    # X = np.arange(11)
-    # print(X)
-    # n = X.size
-    # X = X.reshape(n, 1)
-    # print(X)
-    # y = X*2
-    # print(y)
 
     theta, error, epochs = p.train(X, y)
     print("theta", theta)
@@ -108,27 +95,9 @@ def run_nonlinear(epochs, learning_rate, error_min):
     # extract features and labels (as column data)
     X, y = data[:, :-1], data[:, -1][:, np.newaxis]
 
-    # plot each feature against the label
-    # for i in range(X.shape[1]):
-    #   sns.relplot(data, x=data[:,i], y=data[:,-1])
-    #   plt.show()
-
     p = NonLinearPerceptron(learning_rate, epochs, error_min)
 
-    # print("min", min(y))
-    # print("max", max(y))
-
-    # X = np.array([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5])
-    # print(X)
-    # n = X.size
-    # X = X.reshape(n, 1)
-    # print(X)
-    # y = X*0.1
-    # print(y)
-
     y_norm = escale_all(y)
-    # y_norm= 2 * (y - min(y))/(max(y)-min(y)) - 1
-    # y_norm = (y - min(y))/(max(y)-min(y))  para la funcion sigmoida
 
     theta, error, epochs = p.train(X, y_norm)
     print("theta", theta)

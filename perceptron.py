@@ -115,10 +115,6 @@ class Perceptron:
             # take a random sample
             for mu in mus:
 
-                # mu = rng.integers(0, n)
-                ##exc = h(X[mu], weights)          # excitement
-                ##o = self.g(exc)              # activation
-
                 # update weights
                 delta_w = self.delta_w_f(self.lr, X, mu, y, weights, self.g, self.g_prime)
                 delta_w = delta_w.reshape(p, 1)
