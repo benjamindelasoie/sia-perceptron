@@ -84,7 +84,8 @@ class MultilayerPerceptron:
 
                 sum_errors += self._mse(target, output)
 
-            print("Error: {} at epoch {}".format(sum_errors / len(inputs), i+1))
+            if i+1 % 100 == 0:
+                print("Error: {} at epoch {}".format(sum_errors / len(inputs), i+1))
 
         print("Training complete!")
         print("=====")
@@ -115,18 +116,18 @@ class MultilayerPerceptron:
 if __name__ == "__main__":
 
     inputs = np.array(utils.data_import('TP2-ej3-digitos.txt', 7))
-    outputs = np.array(utils.data_import('TP2-ej3-b-expected.txt', 1), dtype=float)
+    outputs = np.array(utils.data_import('TP2-ej3-c-expected.txt', 1), dtype=float)
 
 
-    print(inputs)
-    print(outputs)
+    print("inputs", inputs, type(inputs), inputs.size, inputs.shape)
+    print("outputs", outputs, type(outputs), outputs.shape)
 
-    mlp = MultilayerPerceptron(35, [15], 1)
+    mlp = MultilayerPerceptron(35, list(np.repeat(35, 15)), 10)
 
-    mlp.train(inputs, outputs, 50000, 0.01)
+    mlp.train(inputs, outputs, 50000, 0.001)
 
     for input in inputs:
-        print(input)
+        # print(input)
         output = mlp.forward_propagate(input)
 
 
